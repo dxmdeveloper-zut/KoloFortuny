@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdio>
 #include <cwchar>
+#include <exception>
 #include <fstream>
 #include <string>
 #include <iostream>
@@ -43,7 +44,7 @@ void Game::runGame(){
     // main loop
     for(;;this->round = 0){
         // choosing random word
-        this->wordIndex = getRandomInt<size_t>(0, this->dictionary.size()); 
+        this->wordIndex = getRandomInt<size_t>(0, this->dictionary.size() -1); 
         std::wstring correctWord = TextAndIO::wcstolower(this->dictionary[this->wordIndex]);
         // checked letters map renew
         this->allocCheckedMap();
@@ -63,7 +64,7 @@ void Game::runGame(){
                     std::getline(std::wcin, guess);
                     if(TextAndIO::wcstolower(guess) == correctWord){
                         this->printWinText(cuPlayer->getMoney());
-                        cuPlayer->moveMoneyToAccount();
+                        *cuPlayer>>=cuPlayer->getMoney();
                         isWordGuessed = true;
                     }
                 } break;
@@ -79,7 +80,7 @@ void Game::runGame(){
             }
         }
         for(auto &player : players){
-            player.setMoney(0);
+            player&=0;
         }
     }
 }
@@ -103,7 +104,7 @@ void Game::spinAndGuessVowelAIO(const std::wstring &correctword, Player *cuPlaye
             std::wstring::difference_type n = 0;
             if((n = std::count(correctword.begin(),correctword.end(), letter))){
                 this->printCorrectLetterText();
-                cuPlayer->addMoney(reward * n);
+                *cuPlayer += reward * n;
             }
             else {
                 this->printIncorrectLetterText();
@@ -133,7 +134,10 @@ wchar_t Game::guessVowelGetInput(const std::wstring &correctWord) const {
 
 void Game::loadDictionary(std::wifstream &file){
     std::wstring line;
-    while(std::getline(file, line)){
+    while(std::getline(file, line, L'\n')){
+        /*for(wchar_t c : line){
+            std::wcout << c;
+        }*/
         if(line.length() > 2){
             this->dictionary.push_back(line); 
         }
@@ -197,7 +201,7 @@ std::wstring Game::getMask() const {
 wchar_t Game::giveChoice() const {
     std::cout   <<  "1. Zgaduj hasło" 
     << std::endl << "2. Zakręć kołem" 
-    << std::endl << "e. Wyjdź z gry";
+    << std::endl << "e. Wyjdź z gry\n";
 
     wchar_t choice = towlower(TextAndIO::getInputWChar());
     while(!std::wcschr(L"12e", choice)){
@@ -208,7 +212,7 @@ wchar_t Game::giveChoice() const {
 }
 
 int Game::spin(){    
-    size_t r = getRandomInt<size_t>(0, sizeof(this->rewards) / sizeof(this->rewards[0]));
+    size_t r = getRandomInt<size_t>(0, sizeof(this->rewards) / sizeof(this->rewards[0]) - 1);
 
     return rewards[r];
 }

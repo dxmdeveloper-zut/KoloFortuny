@@ -12,7 +12,11 @@ class Player {
     int getMoney() const;
     void moveMoneyToAccount();
     int getAccountMoney() const;
-    
+    void operator+=(int money);
+    void operator-=(int money);
+    void operator&=(int money);
+    void operator>>=(int accountMoney);
+
     friend std::ostream& operator<<(std::ostream& os, const Player& player);
     private:
     std::string name;

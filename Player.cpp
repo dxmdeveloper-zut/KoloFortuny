@@ -23,6 +23,20 @@ int Player::getAccountMoney() const{
     return this->account;
 }
 
+void Player::operator+=(int a){
+    this->addMoney(a);
+}
+void Player::operator-=(int a){
+    this->addMoney(a * -1);
+}
+void Player::operator&=(int a){
+    this->setMoney(a);
+}
+void Player::operator>>=(int accountMoney){
+    this->account += accountMoney;
+}
+
+
 std::ostream& operator << (std::ostream& os, const Player& player){
     os << player.getName() << ": " << player.getMoney() << "\tkonto: " << player.getAccountMoney();
     return os;

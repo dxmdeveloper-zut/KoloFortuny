@@ -1,12 +1,14 @@
 #include "TextAndIO.hpp"
+#include <codecvt>
 #include <string.h>
 #include <cwchar>
 
 void TextAndIO::setConsole_utf8(){
+    std::ios_base::sync_with_stdio(false);
     std::cout.imbue(std::locale("C.utf8"));
     std::cin.imbue(std::locale("C.utf8"));
-    std::wcout.imbue(std::locale("C.utf8"));
-    std::wcin.imbue(std::locale("C.utf8"));
+    std::wcin.imbue(std::locale(std::locale(), new std::codecvt_utf8<wchar_t> ));
+    std::wcout.imbue(std::locale(std::locale(), new std::codecvt_utf8_utf16<wchar_t> ));
 }
 bool TextAndIO::isWCharVowel(wchar_t ch){
     return wcschr(L"aąeęiouóy", towlower(ch)) ? true : false;
